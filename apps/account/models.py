@@ -20,4 +20,46 @@ class UserManager(BaseUserManager):
 
     def create_user(self, username, email, password, **extra_fields):
         extra_fields.setdefault('is_staff', False)
-        extra
+        extra_fields.setdefault('is_active', False)
+        return self._create(username, email, password, **extra_fields)
+    
+    def create_superuser(self, username, password, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_active', True)
+        return self._create(username, password, **extra_fields)
+
+
+class User(AbstractBaseUser):
+    username = models.CharField('Username', max_length=50, primary_key=True)
+    email = models.EmailField('Email', max_length=255, unique=True)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
+    activation_code = models.CharField(default=False)
+    
+    objects = UserManager()
+
+    USERNAME_FIELDS = 'username'
+    REQUIRED_FIELDS = ['email']
+
+    def __str__(self) -> str:
+        return self.username
+
+    def has_module_perms(self, app_label):
+        return self.is_staff
+
+    def has_perm(self, obj=None):
+        return self.is_staff
+
+    def create_activation_code(self):
+        code = get_random_string(length=8)
+        if User.objects.filter(activation_code=code).exists():
+            self.create_activation_code()
+        self.activation_code = code 
+        self.save()
+
+    class Meta:
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
+
+
+    
