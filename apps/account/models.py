@@ -23,10 +23,10 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_active', False)
         return self._create(username, email, password, **extra_fields)
     
-    def create_superuser(self, username, password, **extra_fields):
+    def create_superuser(self, username, email, password, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_active', True)
-        return self._create(username, password, **extra_fields)
+        return self._create(username, email, password, **extra_fields)
 
 
 class User(AbstractBaseUser):
@@ -34,11 +34,11 @@ class User(AbstractBaseUser):
     email = models.EmailField('Email', max_length=255, unique=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
-    activation_code = models.CharField(default=False)
+    activation_code = models.CharField(max_length=8, blank=True)
     
     objects = UserManager()
 
-    USERNAME_FIELDS = 'username'
+    USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
 
     def __str__(self) -> str:

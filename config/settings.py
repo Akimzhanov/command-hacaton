@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
-from email.policy import default
+
 from pathlib import Path
 from datetime import timedelta
 from decouple import config
@@ -46,8 +46,10 @@ INSTALLED_APPS = [
     'drf_yasg',
     'rest_framework_simplejwt',
     
-    'apps.computers',
-]
+    'apps.computer',
+    'apps.account',
+    'apps.review',
+    ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -148,6 +150,8 @@ EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_HOST_PASSWORD = config('EMAIL_PASSWORD') 
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
 
+AUTH_USER_MODEL = 'account.User'
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -158,7 +162,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=180),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'USER_ID_FIELD': 'username',
     'AUTH_HEADER_TYPES': ('Bearer', 'Token'),
@@ -167,4 +171,3 @@ SIMPLE_JWT = {
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
 CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
 
-AUTH_USER_MODEL = 'account.User'
