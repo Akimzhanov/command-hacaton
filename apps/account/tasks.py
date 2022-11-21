@@ -7,9 +7,9 @@ from config.celery import app
 def send_activation_code(email, activation_code):
     activation_link = f'http://localhost:8000/account/activate/{activation_code}/'
     html_message = render_to_string(
-        'account/code_mail.html',
+        'account/code_mail.html', 
         {'activation_link': activation_link}
-    )
+        )
     send_mail(
         'Activate your account!',
         '',
@@ -18,9 +18,6 @@ def send_activation_code(email, activation_code):
         html_message=html_message,
         fail_silently=False
     )
-
-
-
 
 
 

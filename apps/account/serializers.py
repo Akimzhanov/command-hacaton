@@ -48,3 +48,82 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return user
 
         
+class PasswordChangeSerializer(serializers.Serializer):
+    old_password = serializers.CharField(max_length=128, required=True)
+    new_password = serializers.CharField(max_length=128, required=True)
+    new_pass_confirm = serializers.CharField(max_length=128, required=True)
+
+
+    def validate_old_password(self, old_password):
+        user = self.context.get('request').user
+        if not user.check_password(old_password):
+            raise serializers.ValidationError(
+                'Wrong password'
+            )
+        return old_password 
+
+    def validate(self, attrs: dict):
+        new_password = attrs.get('new_password')
+        new_pass_confirm = attrs.get('new_pass_confirm')
+        if new_password != new_pass_confirm:
+            raise serializers.ValidationError('Passwords do not match')
+        return attrs
+
+    def set_new_password(self):
+        user = self.context.get('request').user
+        password = self.validated_data.get('new_password')
+        user.set_password(password)
+        user.save()
+
+
+class RestorePasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField(
+        required = True,
+        max_length = 255,
+        validators = [email_validator]
+    )
+
+
+
+    def send_code(self):
+        email = self.validated_data.get('email')
+        user = User.objects.get(email=email)
+        user.create_activation_code()
+        send_mail(
+            subject='Password restore',
+            message=f'Your code for password restore {user.activation_code}',
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[email]
+        )
+
+class SetRestorePasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField(
+        required = True,
+        max_length = 255,
+        validators = [email_validator]
+    )
+    code = serializers.CharField(min_length=1, max_length=8, required =True)
+    new_password = serializers.CharField(max_length = 128, required = True)
+    new_pass_confirm = serializers.CharField(max_length = 128, required = True)
+
+    def validate_code(self, code):
+        if not User.objects.filter(activation_code=code).exists():
+            raise serializers.ValidationError('Wrong code')
+        return code
+
+    def validate(self, attrs):
+        new_password = attrs.get('new_password')
+        new_pass_confirm = attrs.get('new_pass_confirm')
+        if new_password != new_pass_confirm:
+            raise serializers.ValidationError(
+                'Password do not match'
+            )
+        return attrs
+
+    def set_new_password(self):
+        email = self.validated_data.get('email')
+        user = User.objects.get(email=email)
+        new_password = self.validated_data.get('new_password')
+        user.set_password(new_password)
+        user.activation_code = ''
+        user.save()
