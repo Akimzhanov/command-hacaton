@@ -46,8 +46,10 @@ INSTALLED_APPS = [
     'drf_yasg',
     'rest_framework_simplejwt',
     
+    'apps.computer',
     'apps.account',
-]
+    'apps.review',
+    ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
