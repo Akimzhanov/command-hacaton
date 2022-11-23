@@ -6,6 +6,9 @@ from rest_framework import filters
 from rest_framework.generics import ListAPIView
 
 from django_filters import rest_framework as rest_filter
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
 
 from .serializers import (
     LaptopListSerialiers,
