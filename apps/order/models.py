@@ -19,3 +19,37 @@ class Order(models.Model):
         related_name='orders'
     )
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    address = models.CharField(max_length=200)
+    product = models.ManyToManyField(
+        to=Laptop,
+        through='OrderItems'
+    )
+    total_sum = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    status = models.CharField(max_length=12, choices=STATUS_CHOICES, default='open')
+
+    def __str__(self) -> str:
+        return f'Order #{self.id}'
+
+
+class OrderItems(models.Model):
+    order = models.ForeignKey(
+        to=Order,
+        on_delete=models.RESTRICT,
+        related_name='items'
+    )
+    product = models.ForeignKey(
+        to=Laptop,
+        on_delete=models.RESTRICT,
+        related_name='items'
+    )
+    quantity = models.PositiveIntegerField(default=1)
+
+
+
+
+
+
+
+
+

@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'apps.computer',
     'apps.account',
     'apps.review',
+    'apps.order',
     ]
 
 MIDDLEWARE = [

@@ -1,5 +1,5 @@
 import re
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
@@ -7,6 +7,7 @@ from rest_framework.decorators import action
 from rest_framework import mixins, status, filters
 from rest_framework.generics import ListAPIView
 
+from django_filters import rest_framework as rest_filter
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie
@@ -24,8 +25,18 @@ from .models import Laptop, Category, Rating, Like
 
 class LaptopViewSet(ModelViewSet):
     queryset = Laptop.objects.all()
-    @method_decorator(cache_page(60*15))
-    @method_decorator(vary_on_cookie)
+    serializer_class = LaptopListSerialiers
+    filter_backends = [filters.SearchFilter,
+    rest_filter.DjangoFilterBackend,
+    filters.OrderingFilter]
+    search_fields = ['title','price', 'user__username']
+    
+    ordering_fields = ['created_at']
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+        print(serializer)
+
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 

@@ -50,7 +50,7 @@ class LaptopListSerialiers(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
-        rep['comments_count'] = instance.comment.all().count()
+        rep['comments_count'] = instance.comments.all().count()
         return rep
 
 
