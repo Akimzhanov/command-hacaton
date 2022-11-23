@@ -24,6 +24,7 @@ from .models import Laptop, Category, Rating, Like
 
 
 class LaptopViewSet(ModelViewSet):
+    
     queryset = Laptop.objects.all()
     serializer_class = LaptopListSerialiers
     filter_backends = [filters.SearchFilter,
@@ -37,6 +38,8 @@ class LaptopViewSet(ModelViewSet):
         serializer.save(user=self.request.user)
         print(serializer)
 
+    @method_decorator(cache_page(60*60*2))
+    @method_decorator(vary_on_cookie)
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
