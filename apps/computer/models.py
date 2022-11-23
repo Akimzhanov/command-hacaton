@@ -133,3 +133,4 @@ class Like(models.Model):
 
     def __str__(self) -> str:
         return f'Liked by {self.user.username}'
+

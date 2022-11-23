@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Order, OrderItems
 
 
+
 class OrderItemsSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItems
@@ -22,13 +23,17 @@ class OrderSerializer(serializers.ModelSerializer):
         total_sum = 0
         orders_items = []
         for item in items:
-            orders_items.append(OrderItems(
+            check = OrderItems(
                 order=order,
                 product=item['product'],
                 quantity=item['quantity']
-            ))
+            )
+            if item['product'].quantity < item['quantity']:
+                raise serializers.ValidationError('Неверное количество')
+            orders_items.append(check)
             total_sum +=item['product'].price * item['quantity']
-
+            item['product'].quantity -= item['quantity']
+            item['product'].save()
         OrderItems.objects.bulk_create(orders_items)
         order.total_sum = total_sum
         order.save()
