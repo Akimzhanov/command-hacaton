@@ -50,7 +50,7 @@ class LaptopListSerialiers(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
-        rep['comments_count'] = instance.comment.all().count()
+        rep['comments_count'] = instance.comments.all().count()
         return rep
 
 
@@ -101,7 +101,7 @@ class LikeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
-        user = self.context.get('requset').user
+        user = self.context.get('request').user
         laptop = self.context.get('laptop').pk
         like = Like.objects.filter(user=user, laptop=laptop).first()
         if like:
