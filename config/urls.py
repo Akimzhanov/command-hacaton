@@ -30,6 +30,7 @@ urlpatterns = [
     path('account/', include('apps.account.urls')),
     path('market/', include('apps.computer.urls')),
     path('market/', include('apps.review.urls')),
+    path('market/', include('apps.order.urls')),
 
 ]
 
