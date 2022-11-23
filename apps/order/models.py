@@ -6,13 +6,7 @@ from apps.computer.models import Laptop
 User = get_user_model()
 
 class Order(models.Model):
-    STATUS_CHOICES = (
-        ('open', 'открыто'),
-        ('in_process', 'в обработке'),
-        ('conceled', 'отмененный'),
-        ('finished', 'завершенный')
-    )
-
+    
     user = models.ForeignKey(
         to=User,
         on_delete=models.RESTRICT,
@@ -26,7 +20,7 @@ class Order(models.Model):
         through='OrderItems'
     )
     total_sum = models.DecimalField(max_digits=14, decimal_places=2, default=0)
-    status = models.CharField(max_length=12, choices=STATUS_CHOICES, default='open')
+  
 
     def __str__(self) -> str:
         return f'Order #{self.id}'
